@@ -55,7 +55,7 @@ module.exports = {
         next(error);
       });
   },
-  
+  // check auth not used
   checkAuth: function(req, res, next) {
     var token = req.headers['x-access-token'];
     if (!token) {

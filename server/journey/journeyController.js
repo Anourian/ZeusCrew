@@ -13,10 +13,11 @@ module.exports = {
     for (var i = 0; i < req.body.waypoints.length; i++) {
       waypoints[req.body.waypoints[i].position] = [req.body.waypoints[i].name, req.body.waypoints[i].location];
     }
-
+    console.log(waypoints);
+    console.log('-----');
     var waypointsCopy = [].concat.apply([], waypoints);
     waypoints = waypointsCopy;
-
+    console.log(waypoints);
     findJourney({wayPoints: waypoints})
       .then(function (waypoint) {
         if (!waypoint) {
@@ -37,6 +38,7 @@ module.exports = {
   getAll: function (req, res, next) {
     Journey.find({})
       .then(function (data) {
+        // console.log(data);
         res.status(200).send(data);
       })
       .catch(function(error) {
