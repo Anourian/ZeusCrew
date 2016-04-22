@@ -4,7 +4,8 @@ angular.module('roadtrippin', [
   'gservice',
   'roadtrippin.auth',
   'roadtrippin.authFactory',
-  'ui.router'
+  'ui.router',
+  'ui.bootstrap'
 ])
 
 .config(function ($stateProvider, $urlRouterProvider, $httpProvider) {
