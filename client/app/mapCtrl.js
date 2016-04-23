@@ -4,6 +4,8 @@ angular.module('roadtrippin.maps', ['gservice'])
     $scope.route.stopOptions = [1, 2, 3, 4, 5];
     $scope.places = [];
     $scope.savedRoutes = [];
+    //$scope.route.stopTypes = ["Things to do", "Restaurants", "Lodging", "Gas"];
+    $scope.route.stopTypes = [];
 
     $scope.gservice = gservice;    
 
@@ -18,7 +20,6 @@ angular.module('roadtrippin.maps', ['gservice'])
     startAutoComplete.addListener('place_changed', function() {
       $scope.route.start = startAutoComplete.getPlace().formatted_address;
         var place = startAutoComplete.getPlace();
-        console.log('place', place);    
     });
 
     var endAutoComplete = new google.maps.places.Autocomplete(
@@ -33,7 +34,7 @@ angular.module('roadtrippin.maps', ['gservice'])
 
     //this is a call to our Google maps API factory for directions
     $scope.getRoute = function() {
-      gservice.calcRoute($scope.route.start, $scope.route.end, $scope.route.numStops)
+      gservice.calcRoute($scope.route.start, $scope.route.end, $scope.route.numStops, $scope.route.stopTypes)
         .then(function(places) { splitLocations(places); });
         $scope.startInput = '';
         $scope.endInput = '';
@@ -148,7 +149,7 @@ angular.module('roadtrippin.maps', ['gservice'])
     $scope.getTimes = function (numStops) {
       var array = []
       for(var i = 0; i<numStops; i++){
-        array.push(i+1);
+        array.push(i);
       }
       return array;
     };

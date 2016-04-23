@@ -24,15 +24,16 @@
       </select> -->
       <label for='numStops'>Number of stops: </label>
       <select id='numStops' class="form-control selectpicker" ng-init="route.numStops = 0" ng-model ="route.numStops" ng-options="n for n in route.stopOptions">
+        <option value="">Select One</option>
       </select>
       <uib-accordion>
         <uib-accordion-group heading="Customize Stops">
           <div ng-repeat="t in getTimes(route.numStops) track by $index">
-            Stop {{t}}: <select class='selectpicker'>
-              <option>Things to do</option>
-              <option>Restaurant</option>
-              <option>Lodging</options>
-              <option>Gas</option>
+            Stop {{t+1}}: <select class='selectpicker' ng-model='route.stopTypes[t]'>
+              <option value='play'>Things to do</option>
+              <option value='eat'>Restaurant</option>
+              <option value='stay'>Lodging</options>
+              <option value='gas'>Gas</option>
             </select>
           </div>
         </uib-accordion-group>
