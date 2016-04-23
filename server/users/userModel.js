@@ -9,13 +9,12 @@ var UserSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  
   password: {
     type: String,
     required: true
   },
   salt: String,
-  userRoute: {
+  userRoute: [{
     startPoint: {
       type: String
     },
@@ -28,7 +27,7 @@ var UserSchema = new mongoose.Schema({
     hash: {
       type: String
     }
-  }
+  }]
 });
 
 UserSchema.methods.comparePasswords = function(attemptedPassword) {
