@@ -149,21 +149,29 @@ angular.module('gservice', [])
         //build out an array of requests
         var placeRequests = [];
         var type;
-        console.log(waypointArray);
         waypointArray.forEach(function (w, index) {
-          type = findType(stopTypes[index]);
-          console.log('type: ' + type);
+          //type = findType(stopTypes[index]);
           placeRequests.push({
             location: new google.maps.LatLng(w.lat, w.lng),
             radius: distance || '500',
-            query: type || 'restaurant'
+            type: type || 'embassy'
           });
         });
         //query the google places service each waypoint
         var doneSoFar = 0; //counter for async for loop
         for (var i = 0; i < placeRequests.length; i++) {
           var placesService = new google.maps.places.PlacesService(document.getElementById('invisible'), placeRequests[i].location);
+          var currentSearch = placeRequests[i];
           placesService.textSearch(placeRequests[i], function (res, status) {
+            if (!res.length){
+              console.log(status);
+              currentSearch.type = findType('play');
+              console.log(currentSearch);
+             // var placesService = new google.maps.places.PlacesService(document.getElementById('invisible'), currentSearch.location);
+              placesService.textSearch(currentSearch, function (res, status){
+                console.log('did this');
+              })
+            }
             if (status == google.maps.places.PlacesServiceStatus.OK) {
               console.log(res);
               var index = 0;
