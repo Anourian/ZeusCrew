@@ -27,7 +27,14 @@
       </select>
       <uib-accordion>
         <uib-accordion-group heading="Customize Stops">
-          <div ng-repeat="t in getTimes(route.numStops) track by $index">Test</div>
+          <div ng-repeat="t in getTimes(route.numStops) track by $index">
+            Stop {{t}}: <select class='selectpicker'>
+              <option>Things to do</option>
+              <option>Restaurant</option>
+              <option>Lodging</options>
+              <option>Gas</option>
+            </select>
+          </div>
         </uib-accordion-group>
       </uib-accordion>
       <button id="search-btn" class="btn btn-default" ng-click="getRoute()">Get Stops

@@ -146,6 +146,10 @@ angular.module('roadtrippin.maps', ['gservice'])
     };
     
     $scope.getTimes = function (numStops) {
-      return new Array(numStops);
+      var array = []
+      for(var i = 0; i<numStops; i++){
+        array.push(i+1);
+      }
+      return array;
     };
   });
