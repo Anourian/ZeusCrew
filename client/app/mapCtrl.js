@@ -144,4 +144,8 @@ angular.module('roadtrippin.maps', ['gservice'])
     $scope.signout = function () {
       mapFactory.signout();
     };
+    
+    $scope.getTimes = function (numStops) {
+      return new Array(numStops);
+    };
   });
