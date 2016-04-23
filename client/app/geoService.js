@@ -42,7 +42,7 @@ angular.module('gservice', [])
       // --------------------------------------------------------------
 
       //calculate a route (promisified function)
-      googleMapService.calcRoute = function (start, end, numStops) {
+      googleMapService.calcRoute = function (start, end, numStops, stopTypes) {
         var deferred = $q.defer();
         var request = {
           origin: start,
@@ -57,7 +57,7 @@ angular.module('gservice', [])
             //format and send request for the same trip but with waypoints
             var stops = [];
             var waypoints = getWaypoints(result.routes[0].overview_path, numStops);
-            var promise = getNearbyThings(waypoints); //testing testing
+            var promise = getNearbyThings(waypoints, stopTypes); //testing testing
             promise.then(function (placePoints) {
               googleMapService.render(officialStart, officialEnd, placePoints)
               .then(function () {
@@ -122,14 +122,37 @@ angular.module('gservice', [])
         });
         return waypoints;
       };
+      
+      //determine what the type is based on inpute
+      var findType = function (type) {
+        if(type === 'stay'){
+          return 'lodging';
+        }
+        if(type === 'gas'){
+          return 'gas_station';
+        }
+        if(type === 'eat'){
+          return 'restaurant';
+        }
+        if(type === 'play'){
+          var activites = ['amusement_park' , 'aquarium', 'art_gallery', 'bar', 'bowling_alley', 'casino', 'embassy', 'library', 'movie_theater', 'museum', 'night_club', 'park', 'zoo'];
+          var index = Math.floor(Math.random()*activites.length);
+          return activites[index];
+        }
+        return 'restaurant';
+      }
 
       //get a single nearby attraction for each waypoint (promisified function)
-      var getNearbyThings = function (waypointArray, distance, type) {
+      var getNearbyThings = function (waypointArray, stopTypes, distance) {
         var deferred = $q.defer();
         var placesToStop = [];
         //build out an array of requests
         var placeRequests = [];
-        waypointArray.forEach(function (w) {
+        var type;
+        console.log(waypointArray);
+        waypointArray.forEach(function (w, index) {
+          type = findType(stopTypes[index]);
+          console.log('type: ' + type);
           placeRequests.push({
             location: new google.maps.LatLng(w.lat, w.lng),
             radius: distance || '500',
@@ -142,9 +165,13 @@ angular.module('gservice', [])
           var placesService = new google.maps.places.PlacesService(document.getElementById('invisible'), placeRequests[i].location);
           placesService.textSearch(placeRequests[i], function (res, status) {
             if (status == google.maps.places.PlacesServiceStatus.OK) {
+              console.log(res);
+              var index = 0;
+              //decide on index randomly
+              //var index = Math.floor(Math.random()*20)
               var place = {
-                location: res[0].formatted_address,
-                name: res[0].name
+                location: res[index].formatted_address,
+                name: res[index].name
               };
               placesToStop.push(place);
               doneSoFar++;

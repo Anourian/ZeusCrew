@@ -34,6 +34,7 @@ angular.module('roadtrippin.maps', ['gservice'])
 
     //this is a call to our Google maps API factory for directions
     $scope.getRoute = function() {
+      console.log($scope.route.stopTypes + " +++++++++++++")
       gservice.calcRoute($scope.route.start, $scope.route.end, $scope.route.numStops, $scope.route.stopTypes)
         .then(function(places) { splitLocations(places); });
         $scope.startInput = '';
