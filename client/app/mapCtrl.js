@@ -4,6 +4,7 @@ angular.module('roadtrippin.maps', ['gservice'])
     $scope.route.stopOptions = [1, 2, 3, 4, 5];
     $scope.places = [];
     $scope.savedRoutes = [];
+    $scope.userRoutes = [];
 
     var startAutoComplete = new google.maps.places.Autocomplete(
       document.getElementById('start'), {
@@ -66,7 +67,14 @@ angular.module('roadtrippin.maps', ['gservice'])
     $scope.getAll = function () {
       mapFactory.getAllRoutes().then(function (results) {
         $scope.savedRoutes = results;
+        console.log($scope.savedRoutes);
       });
+    };
+    $scope.shareRoute = function(hash) {
+      console.log('it is shared');
+      console.log(hash);
+      // iterate over the saved routes and check for hash then save those into an object
+      // then send it to the server
     };
 
     $scope.viewSavedRoute = function (hash) {

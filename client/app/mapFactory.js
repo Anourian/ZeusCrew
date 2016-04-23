@@ -21,11 +21,15 @@ angular.module('roadtrippin.mapsFactory', [])
     };
 
     var getAllRoutes = function() {
+      console.log('invoked');
+      console.log(localStorage.username);
+      var username = localStorage.username;
       var deferred = $q.defer();
       $http({
         method: 'GET',
-        url: '/saveJourney'
+        url: '/saveJourney/' + username
       }).then(function (res) {
+        // console.log(res.data);
         deferred.resolve (res.data);
       }).catch(function (err) {
         deferred.reject (err);
