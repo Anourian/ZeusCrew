@@ -1,5 +1,5 @@
 angular.module('roadtrippin.maps', ['gservice'])
-  .controller('mapController', function($scope, mapFactory, gservice, $location, $anchorScroll) {
+  .controller('mapController', function($scope, mapFactory, gservice, $location, $anchorScroll, $window) {
     $scope.route = {};
     $scope.route.stopOptions = [1, 2, 3, 4, 5];
     $scope.places = [];
@@ -54,7 +54,13 @@ angular.module('roadtrippin.maps', ['gservice'])
     };
 
     $scope.saveRoute = function () {
-      mapFactory.saveJourneyWithWaypoints(gservice.thisTrip).then($scope.getAll());
+      // grab username somehow and pass it into the function below
+
+      // console.log('something');
+      // window.localstorage now contains username so pass it into 
+      // saveJourneyWithWaypoints to query 
+      mapFactory.saveJourneyWithWaypoints(gservice.thisTrip, $window.localStorage.username)
+      .then($scope.getAll());
     };
 
     $scope.getAll = function () {
