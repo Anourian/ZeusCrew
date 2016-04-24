@@ -1,10 +1,15 @@
 angular.module('roadtrippin.maps', ['gservice'])
-  .controller('mapController', function($scope, mapFactory, gservice, $location, $anchorScroll) {
+  .controller('mapController', function($scope, mapFactory, gservice, $location, $anchorScroll, $window) {
     $scope.route = {};
     $scope.route.stopOptions = [1, 2, 3, 4, 5];
     $scope.places = [];
     $scope.savedRoutes = [];
+
     $scope.gservice = gservice;    
+
+    $scope.popularRoutes = [];
+
+
     var startAutoComplete = new google.maps.places.Autocomplete(
       document.getElementById('start'), {
       types: ['geocode']
@@ -13,8 +18,7 @@ angular.module('roadtrippin.maps', ['gservice'])
     startAutoComplete.addListener('place_changed', function() {
       $scope.route.start = startAutoComplete.getPlace().formatted_address;
         var place = startAutoComplete.getPlace();
-        console.log('place', place);   
-        console.log($scope.route.start); 
+        console.log('place', place);    
     });
 
     var endAutoComplete = new google.maps.places.Autocomplete(
@@ -53,12 +57,13 @@ angular.module('roadtrippin.maps', ['gservice'])
       return String.fromCharCode(i + 66);
     };
 
+
     $scope.saveRoute = function () {           
       var trip = $scope.gservice.thisTrip;
       if (Object.keys(trip).length > 0){
         var rlegs = $scope.gservice.directionsDisplay.directions.routes[0].legs; 
         if (trip.start !== rlegs[0].start_address){
-          trip.start = rlegs[0].start_address
+          trip.start = rlegs[0].start_address;
         }
         if (trip.end !== rlegs[rlegs.length - 1]){
           trip.end = rlegs[rlegs.length - 1].end_address;
@@ -76,12 +81,27 @@ angular.module('roadtrippin.maps', ['gservice'])
           }
         }
       }
-      mapFactory.saveJourneyWithWaypoints(gservice.thisTrip).then($scope.getAll());
+      mapFactory.saveJourneyWithWaypoints(gservice.thisTrip, $window.localStorage.username).then($scope.getAll());
+
+    };
+    $scope.getPopularPath = function() {
+      mapFactory.getPopularRoutes().then(function (results) {
+        $scope.popularRoutes = results;
+      });
     };
 
     $scope.getAll = function () {
       mapFactory.getAllRoutes().then(function (results) {
         $scope.savedRoutes = results;
+      });
+    };
+    $scope.shareRoute = function(hash) {
+      $scope.savedRoutes.forEach(function(obj, index) {
+        if (obj.hash === hash) {
+          mapFactory.shareJourney(obj).then(function(result) {
+            $scope.getPopularPath();
+          });
+        }
       });
     };
 
@@ -119,6 +139,7 @@ angular.module('roadtrippin.maps', ['gservice'])
     };
 
     $scope.getAll();
+    $scope.getPopularPath();
 
     $scope.signout = function () {
       mapFactory.signout();

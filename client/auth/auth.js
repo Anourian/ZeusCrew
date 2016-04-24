@@ -6,16 +6,21 @@ angular.module('roadtrippin.auth', [])
   $scope.errorMessage = '';
   
   $scope.signin = function(valid) {
+    console.log('is this working');
     if (valid) {
       authFactory.signin($scope.user)
-        .then(function (token) {
-          if (token && typeof token !== 'object') {
+        .then(function (data) {
+          if (data.token && typeof data.token !== 'object') {
             $scope.loginError = false;
-            $window.localStorage.setItem('com.roadtrippin', token);
+            $window.localStorage.setItem('com.roadtrippin', data.token);
+            $window.localStorage.setItem('username', data.username);
             $location.path('/');
-          } else if (typeof token === 'object') {
+            // console.log('logged in');
+            // console.log(data.username);
+            // console.log($window.localStorage);
+          } else if (typeof data.token === 'object') {
             $scope.loginError = true;
-            $scope.errorMessage = token.error;
+            $scope.errorMessage = data.token.error;
           }
         })
         .catch(function(error) {
@@ -27,14 +32,15 @@ angular.module('roadtrippin.auth', [])
   $scope.signup = function(valid) {
     if (valid) {
       authFactory.signup($scope.user)
-        .then(function (token) {
-          if (token && typeof token !== 'object') { 
+        .then(function (data) {
+          if (data.token && typeof data.token !== 'object') { 
             $scope.loginError = false;
-            $window.localStorage.setItem('com.roadtrippin', token);
+            $window.localStorage.setItem('com.roadtrippin', data.token);
+            $window.localStorage.setItem('username', data.username);
             $location.path('/');
-          } else if (typeof token === 'object') {
+          } else if (typeof data.token === 'object') {
             $scope.loginError = true;
-            $scope.errorMessage = token.error;
+            $scope.errorMessage = data.token.error;
           }
         })
         .catch(function(error) {

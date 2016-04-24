@@ -8,7 +8,9 @@ angular.module('roadtrippin.authFactory', [])
       data: user
     })
     .then(function(resp) {
-      return resp.data.token;
+      console.log(resp.data);
+      // resp.data has username returned GOODDD now use this to query stuff
+      return resp.data;
     })
     .catch(function(error) {
       console.log('ERROR: ', error);
@@ -23,7 +25,7 @@ angular.module('roadtrippin.authFactory', [])
       data: user
     })
     .then(function(resp) {
-      return resp.data.token;
+      return resp.data;
     })
     .catch(function(error) {
       console.log('ERROR: ', error);

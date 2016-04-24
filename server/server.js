@@ -20,10 +20,10 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   console.log('Mongoose is connected');
 });
-  
-
+app.get('/shareJourney', journeyController.getShareJourney);  
+app.post('/shareJourney', journeyController.shareJourney);
 app.post('/saveJourney', journeyController.saveJourney);
-app.get('/saveJourney', journeyController.getAll);
+app.get('/saveJourney/:username', journeyController.getUserRoute);
 app.post('/signin', userController.signin);
 app.post('/signup', userController.signup);
 app.use(userController.errorHandler);

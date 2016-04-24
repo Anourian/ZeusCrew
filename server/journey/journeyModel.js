@@ -17,17 +17,6 @@ var JourneySchema = new mongoose.Schema({
   }
 });
 
-var createSha = function (points) {
-  var shasum = crypto.createHash('sha1');
-  shasum.update(points);
-  return shasum.digest('hex').slice(0, 5);
-};
 
-JourneySchema.pre('save', function(next) {
-  var journey = this;
-  var hash = createSha(journey.wayPoints.length.toString() + journey.startPoint + journey.endPoint);
-  journey.hash = hash;
-  next();
-});
-
-module.exports = mongoose.model('Journey', JourneySchema);
+var Journey = mongoose.model('Journey', JourneySchema);
+module.exports = Journey;
