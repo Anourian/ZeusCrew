@@ -59,6 +59,7 @@ angular.module('gservice', [])
             var waypoints = getWaypoints(result.routes[0].overview_path, numStops);
             var promise = getNearbyThings(waypoints, stopTypes); //testing testing
             promise.then(function (placePoints) {
+              console.log(placePoints);
               googleMapService.render(officialStart, officialEnd, placePoints)
               .then(function () {
                 deferred.resolve(googleMapService.thisTrip.waypoints);
@@ -126,20 +127,20 @@ angular.module('gservice', [])
       //determine what the type is based on inpute
       var findType = function (type) {
         if(type === 'stay'){
-          return 'lodging';
+          return ['lodging'];
         }
         if(type === 'gas'){
-          return 'gas_station';
+          return ['gas_station'];
         }
         if(type === 'eat'){
-          return 'restaurant';
+          return ['restaurant'];
         }
         if(type === 'play'){
-          var activites = ['amusement_park' , 'aquarium', 'art_gallery', 'bar', 'bowling_alley', 'casino', 'embassy', 'library', 'movie_theater', 'museum', 'night_club', 'park', 'zoo'];
-          var index = Math.floor(Math.random()*activites.length);
-          return activites[index];
+          var activities = ['amusement_park' , 'aquarium', 'art_gallery', 'bowling_alley', 'casino', 'embassy', 'movie_theater', 'museum', 'park', 'zoo'];
+          //var index = Math.floor(Math.random()*activities.length);
+          return ['attraction'];
         }
-        return 'restaurant';
+        return ['restaurant'];
       }
 
       //get a single nearby attraction for each waypoint (promisified function)
@@ -148,41 +149,31 @@ angular.module('gservice', [])
         var placesToStop = [];
         //build out an array of requests
         var placeRequests = [];
-        var type;
+        var types;
+        var searchCount = 0;
         waypointArray.forEach(function (w, index) {
-          //type = findType(stopTypes[index]);
+          types = findType(stopTypes[index]);
           placeRequests.push({
             location: new google.maps.LatLng(w.lat, w.lng),
             radius: distance || '500',
-            type: type || 'embassy'
+            query: types || 'restaurant'
           });
         });
         //query the google places service each waypoint
         var doneSoFar = 0; //counter for async for loop
         for (var i = 0; i < placeRequests.length; i++) {
           var placesService = new google.maps.places.PlacesService(document.getElementById('invisible'), placeRequests[i].location);
-          var currentSearch = placeRequests[i];
           placesService.textSearch(placeRequests[i], function (res, status) {
-            if (!res.length){
-              console.log(status);
-              currentSearch.type = findType('play');
-              console.log(currentSearch);
-             // var placesService = new google.maps.places.PlacesService(document.getElementById('invisible'), currentSearch.location);
-              placesService.textSearch(currentSearch, function (res, status){
-                console.log('did this');
-              })
-            }
-            if (status == google.maps.places.PlacesServiceStatus.OK) {
-              console.log(res);
-              var index = 0;
-              //decide on index randomly
-              //var index = Math.floor(Math.random()*20)
-              var place = {
-                location: res[index].formatted_address,
-                name: res[index].name
-              };
-              placesToStop.push(place);
+            if (status == google.maps.places.PlacesServiceStatus.OK || status == 'ZERO_RESULTS') {
               doneSoFar++;
+              if (status == google.maps.places.PlacesServiceStatus.OK) {
+              //var random = Math.floor(Math.random() * res.length);
+              var place = {
+                location: res[0].formatted_address,
+                name: res[0].name
+              };
+              placesToStop.push(place);                
+              }
               if (doneSoFar === placeRequests.length) {
                 deferred.resolve(placesToStop);
               }
