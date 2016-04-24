@@ -33,7 +33,18 @@ angular.module('roadtrippin.mapsFactory', [])
       });
       return deferred.promise;
     };
-
+    var getPopularRoutes = function() {
+      var deferred = $q.defer();
+      $http({
+        method: 'GET',
+        url: '/shareJourney'
+      }).then(function (res) {
+        deferred.resolve (res.data);
+      }).catch(function (err) {
+        deferred.reject (err);
+      });
+      return deferred.promise;
+    };
     var getAllRoutes = function() {
       console.log('invoked');
       console.log(localStorage.username);
@@ -57,6 +68,7 @@ angular.module('roadtrippin.mapsFactory', [])
     };
 
     return {
+      getPopularRoutes: getPopularRoutes,
       shareJourney: shareJourney,
       saveJourneyWithWaypoints: saveJourneyWithWaypoints,
       getAllRoutes: getAllRoutes,

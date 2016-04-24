@@ -4,7 +4,7 @@ angular.module('roadtrippin.maps', ['gservice'])
     $scope.route.stopOptions = [1, 2, 3, 4, 5];
     $scope.places = [];
     $scope.savedRoutes = [];
-    $scope.userRoutes = [];
+    $scope.popularRoutes = [];
 
     var startAutoComplete = new google.maps.places.Autocomplete(
       document.getElementById('start'), {
@@ -63,6 +63,13 @@ angular.module('roadtrippin.maps', ['gservice'])
       mapFactory.saveJourneyWithWaypoints(gservice.thisTrip, $window.localStorage.username)
       .then($scope.getAll());
     };
+    $scope.getPopularPath = function() {
+      mapFactory.getPopularRoutes().then(function (results) {
+        $scope.popularRoutes = results;
+        console.log('------');
+        console.log($scope.popularRoutes);
+      });
+    };
 
     $scope.getAll = function () {
       mapFactory.getAllRoutes().then(function (results) {
@@ -112,6 +119,7 @@ angular.module('roadtrippin.maps', ['gservice'])
     };
 
     $scope.getAll();
+    $scope.getPopularPath();
 
     $scope.signout = function () {
       mapFactory.signout();
