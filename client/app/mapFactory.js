@@ -3,6 +3,20 @@ angular.module('roadtrippin.mapsFactory', [])
   .factory('mapFactory', function($http, $q, $window, $location) {
 
     //send endpoints and array of waypoints to the server
+    var shareJourney = function(selectedTrip) {
+      console.log(selectedTrip);
+      var deferred = $q.defer ();
+      $http({
+        method: 'POST',
+        url: '/shareJourney',
+        data: JSON.stringify(selectedTrip)
+      }).then(function (res) {
+        deferred.resolve (res);
+      }).catch(function (err) {
+        deferred.reject (err);
+      });
+      return deferred.promise;
+    };
     var saveJourneyWithWaypoints = function (tripObject, username) {
       // console.log(username);
       // console.log(tripObject);
@@ -43,6 +57,7 @@ angular.module('roadtrippin.mapsFactory', [])
     };
 
     return {
+      shareJourney: shareJourney,
       saveJourneyWithWaypoints: saveJourneyWithWaypoints,
       getAllRoutes: getAllRoutes,
       signout: signout

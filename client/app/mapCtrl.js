@@ -71,10 +71,11 @@ angular.module('roadtrippin.maps', ['gservice'])
       });
     };
     $scope.shareRoute = function(hash) {
-      console.log('it is shared');
-      console.log(hash);
-      // iterate over the saved routes and check for hash then save those into an object
-      // then send it to the server
+      $scope.savedRoutes.forEach(function(obj, index) {
+        if (obj.hash === hash) {
+          mapFactory.shareJourney(obj);
+        }
+      });
     };
 
     $scope.viewSavedRoute = function (hash) {
