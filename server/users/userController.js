@@ -19,7 +19,7 @@ module.exports = {
             .then(function(foundUser) {
               if (foundUser) {
                 var token = jwt.encode(user, 'route66');
-                res.json({token: token});
+                res.json({token: token, username: username});
               } else {
                 return next(new Error('No User'));
               }
@@ -49,13 +49,13 @@ module.exports = {
       .then(function(user) {
         // create token to send back for authorization
         var token = jwt.encode(user, 'route66');
-        res.json({token: token});
+        res.json({token: token, username: username});
       })
       .fail(function(error) {
         next(error);
       });
   },
-  
+  // check auth not used
   checkAuth: function(req, res, next) {
     var token = req.headers['x-access-token'];
     if (!token) {
