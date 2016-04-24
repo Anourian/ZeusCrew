@@ -138,7 +138,7 @@ angular.module('gservice', [])
         if(type === 'play'){
           var activities = ['amusement_park' , 'aquarium', 'art_gallery', 'bowling_alley', 'casino', 'embassy', 'movie_theater', 'museum', 'park', 'zoo'];
           //var index = Math.floor(Math.random()*activities.length);
-          return ['attraction'];
+          return ['tourist attraction'];
         }
         return ['restaurant'];
       }
@@ -167,10 +167,10 @@ angular.module('gservice', [])
             if (status == google.maps.places.PlacesServiceStatus.OK || status == 'ZERO_RESULTS') {
               doneSoFar++;
               if (status == google.maps.places.PlacesServiceStatus.OK) {
-              //var random = Math.floor(Math.random() * res.length);
+              var random = Math.floor(Math.random() * res.length);
               var place = {
-                location: res[0].formatted_address,
-                name: res[0].name
+                location: res[random].formatted_address,
+                name: res[random].name
               };
               placesToStop.push(place);                
               }
