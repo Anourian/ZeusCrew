@@ -42,7 +42,7 @@ angular.module('gservice', [])
       // --------------------------------------------------------------
 
       //calculate a route (promisified function)
-      googleMapService.calcRoute = function (start, end, numStops) {
+      googleMapService.calcRoute = function (start, end, numStops, stopTypes) {
         var deferred = $q.defer();
         var request = {
           origin: start,
@@ -57,8 +57,9 @@ angular.module('gservice', [])
             //format and send request for the same trip but with waypoints
             var stops = [];
             var waypoints = getWaypoints(result.routes[0].overview_path, numStops);
-            var promise = getNearbyThings(waypoints); //testing testing
+            var promise = getNearbyThings(waypoints, stopTypes); //testing testing
             promise.then(function (placePoints) {
+              console.log(placePoints);
               googleMapService.render(officialStart, officialEnd, placePoints)
               .then(function () {
                 deferred.resolve(googleMapService.thisTrip.waypoints);
@@ -122,18 +123,40 @@ angular.module('gservice', [])
         });
         return waypoints;
       };
+      
+      //determine what the type is based on inpute
+      var findType = function (type) {
+        if(type === 'stay'){
+          return ['lodging'];
+        }
+        if(type === 'gas'){
+          return ['gas_station'];
+        }
+        if(type === 'eat'){
+          return ['restaurant'];
+        }
+        if(type === 'play'){
+          var activities = ['amusement_park' , 'aquarium', 'art_gallery', 'bowling_alley', 'casino', 'embassy', 'movie_theater', 'museum', 'park', 'zoo'];
+          //var index = Math.floor(Math.random()*activities.length);
+          return ['tourist attraction'];
+        }
+        return ['restaurant'];
+      }
 
       //get a single nearby attraction for each waypoint (promisified function)
-      var getNearbyThings = function (waypointArray, distance, type) {
+      var getNearbyThings = function (waypointArray, stopTypes, distance) {
         var deferred = $q.defer();
         var placesToStop = [];
         //build out an array of requests
         var placeRequests = [];
-        waypointArray.forEach(function (w) {
+        var types;
+        var searchCount = 0;
+        waypointArray.forEach(function (w, index) {
+          types = findType(stopTypes[index]);
           placeRequests.push({
             location: new google.maps.LatLng(w.lat, w.lng),
             radius: distance || '500',
-            query: type || 'restaurant'
+            query: types || 'restaurant'
           });
         });
         //query the google places service each waypoint
@@ -141,13 +164,16 @@ angular.module('gservice', [])
         for (var i = 0; i < placeRequests.length; i++) {
           var placesService = new google.maps.places.PlacesService(document.getElementById('invisible'), placeRequests[i].location);
           placesService.textSearch(placeRequests[i], function (res, status) {
-            if (status == google.maps.places.PlacesServiceStatus.OK) {
-              var place = {
-                location: res[0].formatted_address,
-                name: res[0].name
-              };
-              placesToStop.push(place);
+            if (status == google.maps.places.PlacesServiceStatus.OK || status == 'ZERO_RESULTS') {
               doneSoFar++;
+              if (status == google.maps.places.PlacesServiceStatus.OK) {
+              var random = Math.floor(Math.random() * res.length);
+              var place = {
+                location: res[random].formatted_address,
+                name: res[random].name
+              };
+              placesToStop.push(place);                
+              }
               if (doneSoFar === placeRequests.length) {
                 deferred.resolve(placesToStop);
               }
