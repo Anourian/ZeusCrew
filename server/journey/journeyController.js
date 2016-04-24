@@ -80,6 +80,15 @@ module.exports = {
     });
   },
   // getAll is not used atm
+  getShareJourney: function(req, res, next) {
+    console.log('inside getshareJourney');
+    Journey.find().then(function(data) {
+      res.status(200).send(data);
+    })
+    .catch(function(err) {
+      res.send(err);
+    });
+  },
   getAll: function (req, res, next) {
     var username = req.params.username;
     findUserRoute({username: username})
