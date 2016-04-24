@@ -179,3 +179,7 @@ h3 {
 .dont-show {
   visibility: hidden;
 }
+
+.typeSelect {
+  display: inline-block;
+}
