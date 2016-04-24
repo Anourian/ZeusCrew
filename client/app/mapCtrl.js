@@ -4,7 +4,7 @@ angular.module('roadtrippin.maps', ['gservice'])
     $scope.route.stopOptions = [1, 2, 3, 4, 5];
     $scope.places = [];
     $scope.savedRoutes = [];
-
+    $scope.gservice = gservice;    
     var startAutoComplete = new google.maps.places.Autocomplete(
       document.getElementById('start'), {
       types: ['geocode']
@@ -53,7 +53,29 @@ angular.module('roadtrippin.maps', ['gservice'])
       return String.fromCharCode(i + 66);
     };
 
-    $scope.saveRoute = function () {
+    $scope.saveRoute = function () {           
+      var trip = $scope.gservice.thisTrip;
+      if (Object.keys(trip).length > 0){
+        var rlegs = $scope.gservice.directionsDisplay.directions.routes[0].legs; 
+        if (trip.start !== rlegs[0].start_address){
+          trip.start = rlegs[0].start_address
+        }
+        if (trip.end !== rlegs[rlegs.length - 1]){
+          trip.end = rlegs[rlegs.length - 1].end_address;
+        }
+        for (var a = 1; a < rlegs.length; a++){
+          var origAdd = trip.waypoints[a-1].location.split(',')[0];
+          var newAdd = rlegs[a].start_address.split(',')[0];
+          if (origAdd !== newAdd){
+            if (origAdd.substring(0,origAdd - 1) === newAdd){
+              trip.waypoints[a-1].location = rlegs[a].start_address;
+            } else {
+              trip.waypoints[a-1].location = rlegs[a].start_address;
+              trip.waypoints[a-1].name = 'Custom Location';              
+            }
+          }
+        }
+      }
       mapFactory.saveJourneyWithWaypoints(gservice.thisTrip).then($scope.getAll());
     };
 
