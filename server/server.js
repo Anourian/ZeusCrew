@@ -21,7 +21,7 @@ db.once('open', function() {
   console.log('Mongoose is connected');
 });
   
-
+app.post('/shareJourney', journeyController.shareJourney);
 app.post('/saveJourney', journeyController.saveJourney);
 app.get('/saveJourney/:username', journeyController.getUserRoute);
 app.post('/signin', userController.signin);
