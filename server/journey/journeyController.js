@@ -1,7 +1,7 @@
 var Q = require('q');
 var Journey = require('./journeyModel.js');
 var User = require('../users/userModel.js');
-
+var crypto = require('crypto');
 var findJourney = Q.nbind(Journey.findOne, Journey);
 var createJourney = Q.nbind(Journey.create, Journey);
 
@@ -9,52 +9,65 @@ var findUserRoute = Q.nbind(User.findOne, User);
 
 
 module.exports = {
+  shareJourney: function(req, res, next) {
+    var hash = req.body.hash;
+    var start = req.body.startPoint;
+    var end = req.body.endPoint;
+    var wayPoints = req.body.wayPoints;
+
+    // try doing this in asynchronous when i get back
+    findJourney({hash: hash}).then(function(result) {
+      if (!result) {
+        console.log('hello');
+        Journey.create({
+          startPoint: start,
+          endPoint: end,
+          wayPoints: wayPoints,
+          hash: hash
+        }, function(err, data) {
+          if (err) {
+            res.send(err);
+          } else {
+            console.log('saved');
+            res.send(data);
+          }
+        });
+      } else {
+        res.send('hello');
+      }
+    });
+
+  },
   saveJourney: function (req, res, next) {
     // req.body has start, end and waypoints
+    var createSha = function (points) {
+      var shasum = crypto.createHash('sha1');
+      shasum.update(points);
+      return shasum.digest('hex').slice(0, 5);
+    };
     var username = req.body.username;
     var start = req.body.start;
     var end = req.body.end;
     var waypoints = [];
-    // putting all the waypoints into the waypoint array
+
     for (var i = 0; i < req.body.waypoints.length; i++) {
       waypoints[req.body.waypoints[i].position] = [req.body.waypoints[i].name, req.body.waypoints[i].location];
     }
-    // waypoint is now an array with inner arrays
-    // console.log(waypoints);
-    // console.log(username);
-    // console.log('-----');
     var waypointsCopy = [].concat.apply([], waypoints);
     waypoints = waypointsCopy;
-    // turned this into a single array
-    // console.log(waypoints);
-    // find userRoute by email first, make sure email is sent
     findUserRoute({username: username}).then(function(profile) {
       var routeObj = {
         startPoint: start,
         endPoint: end,
         wayPoints: waypoints
       };
+      var hash = createSha(routeObj.wayPoints.length.toString() + routeObj.startPoint + routeObj.endPoint);
+      routeObj.hash = hash;
+      console.log('routeObj being saved');
       profile.userRoute.push(routeObj);
       profile.save();
-
-      // console.log(profile.userRoute);
     });
     
-    // findJourney({wayPoints: waypoints})
-    //   .then(function (waypoint) {
-    //     if (!waypoint) {
-    //       return createJourney({
-    //         startPoint: start,
-    //         endPoint: end,
-    //         wayPoints: waypoints
-    //       });
-    //     } else {
-    //       next(new Error('Journey already exist!'));
-    //     }
-    //   })
-    //   .catch(function (error) {
-    //     next(error);
-    //   });
   },
   getUserRoute: function(req, res, next) {
     var username = req.params.username;
