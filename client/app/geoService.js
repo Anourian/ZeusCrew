@@ -16,14 +16,16 @@ angular.module('gservice', [])
 
       //initialize the map if no other instructions are given
       var initialize = function () {
-        directionsDisplay = new google.maps.DirectionsRenderer();
+        directionsDisplay = new google.maps.DirectionsRenderer({draggable:true});
         var SF = new google.maps.LatLng(37.7749, -122.4194);
         var mapOptions = {
           zoom: 7,
           center: SF
         };
         map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        googleMapService.map = map;
         directionsDisplay.setMap(map);
+        googleMapService.directionsDisplay = directionsDisplay;
       };
 
       // Refresh, to re-initialize the map.
@@ -165,7 +167,7 @@ angular.module('gservice', [])
           waypoint.position = position;
         }
         return;
-      };
+      };      
 
       return googleMapService;
     });
