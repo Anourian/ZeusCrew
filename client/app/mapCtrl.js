@@ -80,7 +80,9 @@ angular.module('roadtrippin.maps', ['gservice'])
     $scope.shareRoute = function(hash) {
       $scope.savedRoutes.forEach(function(obj, index) {
         if (obj.hash === hash) {
-          mapFactory.shareJourney(obj);
+          mapFactory.shareJourney(obj).then(function(result) {
+            $scope.getPopularPath();
+          });
         }
       });
     };
