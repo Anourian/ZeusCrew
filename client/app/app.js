@@ -25,8 +25,8 @@ angular.module('roadtrippin', [
     .state('homepage', {
       url: '/homepage',
       templateUrl: './../auth/homepage.html',
-      controller: 'mapController',
-      authenticate: true
+      controller: 'mapController'
+      // authenticate: true
     });
 
   $httpProvider.interceptors.push('AttachTokens');

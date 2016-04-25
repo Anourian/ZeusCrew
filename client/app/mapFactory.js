@@ -75,6 +75,7 @@ angular.module('roadtrippin.mapsFactory', [])
 
     var signout = function() {
       $window.localStorage.removeItem('com.roadtrippin');
+      $window.localStorage.removeItem('username');
       $location.path('/signin');
     };
 
