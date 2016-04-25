@@ -18,11 +18,15 @@ angular.module('roadtrippin.mapsFactory', [])
       return deferred.promise;
     };
     var deleteJourney = function (trip) {
-      console.log(trip);
       var deferred = $q.defer();
       $http.post('/deleteJourney', {
         data: trip
+      }).then(function (res) {
+        deferred.resolve (res);
+      }).catch(function (err) {
+        deferred.reject (err);
       });
+      return deferred.promise;
     }
     var saveJourneyWithWaypoints = function (tripObject, username) {
       // console.log(username);
