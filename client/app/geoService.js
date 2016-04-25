@@ -27,15 +27,16 @@ angular.module('gservice', [])
         directionsDisplay.setMap(map);
         googleMapService.directionsDisplay = directionsDisplay;
       };
+      googleMapService.initialize = initialize;
 
       // Refresh, to re-initialize the map.
-      googleMapService.refresh = function () {
+      /*googleMapService.refresh = function () {
         initialize();
       };
 
       // Refresh the page upon window load.
       google.maps.event.addDomListener(window, 'load',
-        googleMapService.refresh());
+        googleMapService.refresh());*/
 
 
       // Navigation functions - Google directions service

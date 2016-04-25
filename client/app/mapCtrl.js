@@ -10,7 +10,7 @@ angular.module('roadtrippin.maps', ['gservice'])
     $scope.gservice = gservice;    
 
     $scope.popularRoutes = [];
-
+    gservice.initialize();
 
     var startAutoComplete = new google.maps.places.Autocomplete(
       document.getElementById('start'), {
@@ -206,7 +206,6 @@ angular.module('roadtrippin.maps', ['gservice'])
     };
 
     $scope.viewSavedRoute = function (hash) {
-      console.log(hash);
       $location.hash('top');
       $anchorScroll();
       for (var i = 0; i < $scope.savedRoutes.length; i++) {
