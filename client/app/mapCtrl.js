@@ -94,16 +94,19 @@ angular.module('roadtrippin.maps', ['gservice'])
           if (typeof wp[a].location === 'string'){
             //name check
             var name;
+            var geometry;
             for (var b = 0; b < trip.waypoints.length; b++){
                 if (trip.waypoints[b].location === wp[a].location){
                   name = trip.waypoints[b].name;
+                  geometry = trip.waypoints[b].geometry;
                 }
             }
             name = name || 'Custom Location';
             newTrip.waypoints[a] = {
               location:wp[a].location,
               position:a,
-              name:name
+              name:name,
+              geometry:geometry
             };           
           } else {
             var lat = wp[a].location.lat();
@@ -126,7 +129,8 @@ angular.module('roadtrippin.maps', ['gservice'])
             newTrip.waypoints[locations[c].position] = {
               location:val[c].location,
               position:locations[c].position,
-              name:val[c].name
+              name:val[c].name,
+              geometry:{lat:locations[c].lat,lng:locations[c].lng}
             };
             if (c === val.length - 1){
               deferred.resolve(newTrip);
@@ -208,29 +212,44 @@ angular.module('roadtrippin.maps', ['gservice'])
 
     $scope.viewSavedRoute = function (hash) {
       $location.hash('top');
-      $anchorScroll();
+      $anchorScroll();     
       for (var i = 0; i < $scope.savedRoutes.length; i++) {
         if ($scope.savedRoutes[i].hash === hash) {
           //split up waypoints array into names ans locations. Even index ==== name, odd index === location
           $scope.savedRoutes[i].stopLocations = [];
           $scope.savedRoutes[i].stopNames = [];
+          $scope.savedRoutes[i].stopGeometryLat = [];
+          $scope.savedRoutes[i].stopGeometryLng = [];
+           var counter = 0;
           for (var j = 0; j < $scope.savedRoutes[i].wayPoints.length; j++) {
-            if (j % 2 === 0) {
+            if (counter === 0) {
               $scope.savedRoutes[i].stopNames.push($scope.savedRoutes[i].wayPoints[j]);
-            } else {
+            } else if (counter === 1){
               $scope.savedRoutes[i].stopLocations.push($scope.savedRoutes[i].wayPoints[j]);
+            } else if (counter === 2) {
+              $scope.savedRoutes[i].stopGeometryLat.push($scope.savedRoutes[i].wayPoints[j]);
+            } else if (counter === 3) {
+              $scope.savedRoutes[i].stopGeometryLng.push($scope.savedRoutes[i].wayPoints[j]);
+            }
+            if (counter < 3){
+              counter ++;
+            } else {
+              counter = 0;
             }
           }
           //set $scope.places to saved stop data so stop data will display on page
           var places = [];
           for (var k = 0; k < $scope.savedRoutes[i].stopNames.length; k++) {
             var location = $scope.savedRoutes[i].stopLocations[k];
+            var geometry = {lat:$scope.savedRoutes[i].stopGeometryLat[k], lng:$scope.savedRoutes[i].stopGeometryLng[k]};
             var place = {
               name: $scope.savedRoutes[i].stopNames[k],
               location: location,
-              position: k
+              position: k,
+              geometry:geometry
             };
             places.push(place);
+            debugger;
           }
           //add stop locations to stops array, render stops to map
           gservice.render($scope.savedRoutes[i].startPoint, $scope.savedRoutes[i].endPoint, places)
