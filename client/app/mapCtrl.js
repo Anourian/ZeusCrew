@@ -97,7 +97,7 @@ angular.module('roadtrippin.maps', ['gservice'])
         $scope.savedRoutes = results;
       });
     };
-    $scope.shareRoute = function(hash) {
+    $scope.shareRoute = function (hash) {
       $scope.savedRoutes.forEach(function(obj, index) {
         if (obj.hash === hash) {
           mapFactory.shareJourney(obj).then(function(result) {
@@ -106,8 +106,12 @@ angular.module('roadtrippin.maps', ['gservice'])
         }
       });
     };
+    $scope.deleteRoute = function (hash) {
+      mapFactory.deleteJourney({hash: hash, username: $window.localStorage.username});
+    }
 
     $scope.viewSavedRoute = function (hash) {
+      console.log(hash);
       $location.hash('top');
       $anchorScroll();
       for (var i = 0; i < $scope.savedRoutes.length; i++) {
