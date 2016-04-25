@@ -6,7 +6,7 @@ angular.module('roadtrippin.maps', ['gservice'])
     $scope.savedRoutes = [];
     //$scope.route.stopTypes = ["Things to do", "Restaurants", "Lodging", "Gas"];
     $scope.route.stopTypes = [];
-    $scope.username = $window.localStorage.username;
+    $scope.username = $window.localStorage;
 
     $scope.gservice = gservice;    
 
@@ -244,6 +244,7 @@ angular.module('roadtrippin.maps', ['gservice'])
 
     $scope.signout = function () {
       mapFactory.signout();
+      $scope.savedRoutes = [];
     };
     
     $scope.getTimes = function (numStops) {
