@@ -26,7 +26,7 @@
       <select id='numStops' class="form-control selectpicker" ng-init="route.numStops = 0" ng-model ="route.numStops" ng-options="n for n in route.stopOptions">
         <option value="">Select One</option>
       </select>
-      <uib-accordion class='typeSelect'>
+      <uib-accordion ng-show="route.numStops>0"class='typeSelect'>
         <uib-accordion-group heading="Customize Stops">
           <div ng-repeat="t in getTimes(route.numStops) track by $index">
             Stop {{t+1}}: <select class='selectpicker' ng-model='route.stopTypes[t]'>
