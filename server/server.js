@@ -26,6 +26,8 @@ app.post('/saveJourney', journeyController.saveJourney);
 app.get('/saveJourney/:username', journeyController.getUserRoute);
 app.post('/signin', userController.signin);
 app.post('/signup', userController.signup);
+app.post('/deleteJourney', journeyController.deleteOne);
+
 app.use(userController.errorHandler);
 
 
