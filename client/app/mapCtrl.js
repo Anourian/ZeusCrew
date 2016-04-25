@@ -107,7 +107,8 @@ angular.module('roadtrippin.maps', ['gservice'])
       });
     };
     $scope.deleteRoute = function (hash) {
-      mapFactory.deleteJourney({hash: hash, username: $window.localStorage.username});
+      mapFactory.deleteJourney({hash: hash, username: $window.localStorage.username})
+        .then($scope.getAll());
     }
 
     $scope.viewSavedRoute = function (hash) {
