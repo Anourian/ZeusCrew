@@ -4,7 +4,7 @@ var User = require('../users/userModel.js');
 var crypto = require('crypto');
 var findJourney = Q.nbind(Journey.findOne, Journey);
 var createJourney = Q.nbind(Journey.create, Journey);
-
+var deleteJourney = Q.nbind(Journey.update, User);
 var findUserRoute = Q.nbind(User.findOne, User);
 
 
@@ -106,5 +106,15 @@ module.exports = {
     //   .catch(function(error) {
     //     next(error);
     //   });
+  },
+  deleteOne: function (req, res, next) {
+    var hash = req.body.data.hash;
+    var username = req.body.data.username;
+    deleteJourney(
+      {username: username},
+      {$pull: {'userRoute': {'hash': hash}}})
+      .then(function (result) {
+        res.status(200).send(result);
+      });
   }
 };
