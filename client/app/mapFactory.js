@@ -17,6 +17,17 @@ angular.module('roadtrippin.mapsFactory', [])
       });
       return deferred.promise;
     };
+    var deleteJourney = function (trip) {
+      var deferred = $q.defer();
+      $http.post('/deleteJourney', {
+        data: trip
+      }).then(function (res) {
+        deferred.resolve (res);
+      }).catch(function (err) {
+        deferred.reject (err);
+      });
+      return deferred.promise;
+    }
     var saveJourneyWithWaypoints = function (tripObject, username) {
       // console.log(username);
       // console.log(tripObject);
@@ -72,6 +83,7 @@ angular.module('roadtrippin.mapsFactory', [])
       shareJourney: shareJourney,
       saveJourneyWithWaypoints: saveJourneyWithWaypoints,
       getAllRoutes: getAllRoutes,
-      signout: signout
+      signout: signout,
+      deleteJourney: deleteJourney
     };
   });
