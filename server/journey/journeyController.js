@@ -14,8 +14,6 @@ module.exports = {
     var start = req.body.startPoint;
     var end = req.body.endPoint;
     var wayPoints = req.body.wayPoints;
-
-    // try doing this in asynchronous when i get back
     findJourney({hash: hash}).then(function(result) {
       if (!result) {
         console.log('hello');
@@ -28,7 +26,6 @@ module.exports = {
           if (err) {
             res.send(err);
           } else {
-            console.log('saved');
             res.send(data);
           }
         });
@@ -63,9 +60,16 @@ module.exports = {
       };
       var hash = createSha(routeObj.wayPoints.length.toString() + routeObj.startPoint + routeObj.endPoint);
       routeObj.hash = hash;
-      console.log('routeObj being saved');
-      profile.userRoute.push(routeObj);
-      profile.save();
+      var found = false;
+      profile.userRoute.forEach(function(route) {
+        if (route.hash === routeObj.hash) {
+          found = true;
+        }
+      });
+      if (!found) {
+        profile.userRoute.push(routeObj);
+        profile.save();
+      }
     });
     
   },
@@ -98,14 +102,6 @@ module.exports = {
     .catch(function(error) {
       next(error);
     });
-    // Journey.find({})
-    //   .then(function (data) {
-    //     // console.log(data);
-    //     res.status(200).send(data);
-    //   })
-    //   .catch(function(error) {
-    //     next(error);
-    //   });
   },
   deleteOne: function (req, res, next) {
     var hash = req.body.data.hash;
