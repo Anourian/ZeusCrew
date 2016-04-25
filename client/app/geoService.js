@@ -59,7 +59,7 @@ angular.module('gservice', [])
             var waypoints = getWaypoints(result.routes[0].overview_path, numStops);
             var promise = getNearbyThings(waypoints, stopTypes); //testing testing
             promise.then(function (placePoints) {
-              console.log(placePoints);
+              // console.log(placePoints);
               googleMapService.render(officialStart, officialEnd, placePoints)
               .then(function () {
                 deferred.resolve(googleMapService.thisTrip.waypoints);
