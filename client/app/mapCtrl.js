@@ -106,10 +106,45 @@ angular.module('roadtrippin.maps', ['gservice'])
         }
       });
     };
+
     $scope.deleteRoute = function (hash) {
       mapFactory.deleteJourney({hash: hash, username: $window.localStorage.username})
         .then($scope.getAll());
-    }
+    };
+
+    $scope.viewPopularRoute = function(hash) {
+      $location.hash('top');
+      $anchorScroll();
+      for (var i = 0; i < $scope.popularRoutes.length; i++) {
+        if ($scope.popularRoutes[i].hash === hash) {
+          //split up waypoints array into names ans locations. Even index ==== name, odd index === location
+          $scope.popularRoutes[i].stopLocations = [];
+          $scope.popularRoutes[i].stopNames = [];
+          for (var j = 0; j < $scope.popularRoutes[i].wayPoints.length; j++) {
+            if (j % 2 === 0) {
+              $scope.popularRoutes[i].stopNames.push($scope.popularRoutes[i].wayPoints[j]);
+            } else {
+              $scope.popularRoutes[i].stopLocations.push($scope.popularRoutes[i].wayPoints[j]);
+            }
+          }
+          //set $scope.places to saved stop data so stop data will display on page
+          var places = [];
+          for (var k = 0; k < $scope.popularRoutes[i].stopNames.length; k++) {
+            var location = $scope.popularRoutes[i].stopLocations[k];
+            var place = {
+              name: $scope.popularRoutes[i].stopNames[k],
+              location: location,
+              position: k
+            };
+            places.push(place);
+          }
+          //add stop locations to stops array, render stops to map
+          gservice.render($scope.popularRoutes[i].startPoint, $scope.popularRoutes[i].endPoint, places)
+          .then(function (places) { splitLocations(places); });
+        }
+      }
+
+    };
 
     $scope.viewSavedRoute = function (hash) {
       console.log(hash);
@@ -153,7 +188,7 @@ angular.module('roadtrippin.maps', ['gservice'])
     };
     
     $scope.getTimes = function (numStops) {
-      var array = []
+      var array = [];
       for(var i = 0; i<numStops; i++){
         array.push(i);
       }
