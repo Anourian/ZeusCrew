@@ -57,8 +57,6 @@ angular.module('roadtrippin.mapsFactory', [])
       return deferred.promise;
     };
     var getAllRoutes = function() {
-      console.log('invoked');
-      console.log(localStorage.username);
       var username = localStorage.username;
       var deferred = $q.defer();
       $http({
