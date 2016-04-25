@@ -1,5 +1,5 @@
 angular.module('roadtrippin.maps', ['gservice'])
-  .controller('mapController', function($scope, mapFactory, gservice, $location, $anchorScroll, $window) {
+  .controller('mapController', function($scope, mapFactory, gservice, $location, $anchorScroll, $window, $q) {
     $scope.route = {};
     $scope.route.stopOptions = [1, 2, 3, 4, 5];
     $scope.places = [];
@@ -59,32 +59,91 @@ angular.module('roadtrippin.maps', ['gservice'])
       return String.fromCharCode(i + 66);
     };
 
-
-    $scope.saveRoute = function () {           
-      var trip = $scope.gservice.thisTrip;
-      if (Object.keys(trip).length > 0){
-        var rlegs = $scope.gservice.directionsDisplay.directions.routes[0].legs; 
-        if (trip.start !== rlegs[0].start_address){
-          trip.start = rlegs[0].start_address;
-        }
-        if (trip.end !== rlegs[rlegs.length - 1]){
-          trip.end = rlegs[rlegs.length - 1].end_address;
-        }
-        for (var a = 1; a < rlegs.length; a++){
-          var origAdd = trip.waypoints[a-1].location.split(',')[0];
-          var newAdd = rlegs[a].start_address.split(',')[0];
-          if (origAdd !== newAdd){
-            if (origAdd.substring(0,origAdd - 1) === newAdd){
-              trip.waypoints[a-1].location = rlegs[a].start_address;
-            } else {
-              trip.waypoints[a-1].location = rlegs[a].start_address;
-              trip.waypoints[a-1].name = 'Custom Location';              
-            }
+    $scope.getLocation = function(waypoints){
+      var deferred = $q.defer();
+      var geoCheck = new google.maps.Geocoder();
+      locations = [];
+      for (var a = 0; a < waypoints.length; a++){
+        geoCheck.geocode({location:{lat:waypoints[a].lat,lng:waypoints[a].lng}}, function (result, status){
+          if (status === google.maps.GeocoderStatus.OK){
+            var point = {
+              location:result[0].formatted_address,
+              name:'Custom Location'
+            };
+            locations.push(point);
+            if (locations.length === waypoints.length){
+              deferred.resolve(locations);
+            } 
           }
+        });
+        
+      }
+      return deferred.promise;
+    };
+    $scope.saveRoute = function () {  
+    var deferred = $q.defer();               
+      var trip = $scope.gservice.thisTrip;
+      var newTrip = {};
+      var locations = [];
+      if (Object.keys(trip).length > 0){
+        var request = $scope.gservice.directionsDisplay.directions.request;
+        var wp = request.waypoints;        
+        newTrip.waypoints = [];
+        for (var a = 0; a < wp.length; a++){
+          if (typeof wp[a].location === 'string'){
+            //name check
+            var name;
+            for (var b = 0; b < trip.waypoints.length; b++){
+                if (trip.waypoints[b].location === wp[a].location){
+                  name = trip.waypoints[b].name;
+                }
+            }
+            name = name || 'Custom Location';
+            newTrip.waypoints[a] = {
+              location:wp[a].location,
+              position:a,
+              name:name
+            };           
+          } else {
+            var lat = wp[a].location.lat();
+            var lng = wp[a].location.lng();
+            var pos = a;
+            var point = {
+              lat:lat,
+              lng:lng,
+              position:pos
+            };
+            locations.push(point);                       
+          }          
         }
       }
-      mapFactory.saveJourneyWithWaypoints(gservice.thisTrip, $window.localStorage.username).then($scope.getAll());
-
+      if (locations.length === 0){
+        deferred.resolve(newTrip);
+      } else {
+        $scope.getLocation(locations).then(function(val){
+          for (var c = 0; c < val.length; c ++){
+            newTrip.waypoints[locations[c].position] = {
+              location:val[c].location,
+              position:locations[c].position,
+              name:val[c].name
+            };
+            if (c === val.length - 1){
+              deferred.resolve(newTrip);
+            }
+          }
+        });        
+      }
+      return deferred.promise;
+    };
+    $scope.saveRouteComplete = function (){
+      $scope.saveRoute().then(function(val){
+        var newTrip ={};
+        var rlegs = $scope.gservice.directionsDisplay.directions.routes[0].legs;        
+        newTrip.start = rlegs[0].start_address;
+        newTrip.end = rlegs[rlegs.length - 1].end_address;
+        newTrip.waypoints = val.waypoints;
+        mapFactory.saveJourneyWithWaypoints(newTrip, $window.localStorage.username).then($scope.getAll());                
+      });
     };
     $scope.getPopularPath = function() {
       mapFactory.getPopularRoutes().then(function (results) {
