@@ -171,7 +171,8 @@ angular.module('gservice', [])
               var random = Math.floor(Math.random() * res.length);
               var place = {
                 location: res[random].formatted_address,
-                name: res[random].name
+                name: res[random].name,
+                geometry:{lat:res[random].geometry.location.lat(),lng:res[random].geometry.location.lng()}
               };
               placesToStop.push(place);                
               }

@@ -62,6 +62,20 @@
       <p class="stop-address">{{place.location[0]}}</p>
       <p class="stop-address">{{place.location[1]}}, {{place.location[2]}}</p>
       <p class="stop-address">{{place.location[3]}}</p>
+      <button ng-click='getLocation(place)'>Search Yelp Reviews</button>
+      <div class='review' ng-show='place.snippet || place.url || place.rating'>
+        <h4 class="text-center" ng-show='place.rating !== undefined'>{{place.rating}} Star<span ng-show='place.rating > 1'>s</span></h4>
+        <div ng-show='place.snippet !== undefined'>
+          <h4 class="text-center">Review snippet</h4>
+          <p>{{place.snippet}}</p>        
+        </div>
+        <div ng-show='place.url !== undefined'>
+          <a ng-href="{{place.url}}" target='_blank'>
+          {{place.name}} Yelp Page
+          </a>
+        </div>        
+      </div>
+
     </div>
     <button ng-show="places.length && username.username" class="routeBtn btn btn-block" ng-click="saveRouteComplete()">Save this route</button>
   </div>
@@ -78,7 +92,7 @@
       </div>
       <div class="col-xs-4">
         <!-- <div class="stop-count">Number of stops: <br /> {{ route.wayPoints.length/2 }}</div> -->
-        <div class="stop-count">{{route.wayPoints.length/2}} stop<span ng-if="route.wayPoints.length > 2">s</span></div>
+        <div class="stop-count">{{route.wayPoints.length/4}} stop<span ng-if="route.wayPoints.length > 2">s</span></div>
       </div>
       <div class="col-xs-4 centered">
         <button class="saved-route-link btn" ng-click="viewSavedRoute(route.hash)">View this Route</button>
@@ -97,7 +111,7 @@
       </div>
       <div class="col-xs-4">
         <!-- <div class="stop-count">Number of stops: <br /> {{ route.wayPoints.length/2 }}</div> -->
-        <div class="stop-count">{{route.wayPoints.length/2}} stop<span ng-if="route.wayPoints.length > 2">s</span></div>
+        <div class="stop-count">{{route.wayPoints.length/4}} stop<span ng-if="route.wayPoints.length > 2">s</span></div>
       </div>
       <div class="col-xs-4 centered">
         <button class="saved-route-link btn" ng-click="viewPopularRoute(route.hash)">View this Route</button>

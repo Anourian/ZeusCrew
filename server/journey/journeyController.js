@@ -48,7 +48,7 @@ module.exports = {
     var waypoints = [];
 
     for (var i = 0; i < req.body.waypoints.length; i++) {
-      waypoints[req.body.waypoints[i].position] = [req.body.waypoints[i].name, req.body.waypoints[i].location];
+      waypoints[req.body.waypoints[i].position] = [req.body.waypoints[i].name, req.body.waypoints[i].location, req.body.waypoints[i].geometry.lat, req.body.waypoints[i].geometry.lng];
     }
     var waypointsCopy = [].concat.apply([], waypoints);
     waypoints = waypointsCopy;
