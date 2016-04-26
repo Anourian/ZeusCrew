@@ -76,6 +76,17 @@ angular.module('roadtrippin.mapsFactory', [])
       $window.localStorage.removeItem('username');
      // $location.path('/signin');
     };
+    var getLocation = function(reqObj){ 
+    console.log('request object ');
+    console.log(reqObj);     
+      return $http({
+        method:'POST',
+        url:'/yelpLocation',
+        data:reqObj
+      }).then(function(data){
+        return data.data;
+      });
+    };
 
     return {
       getPopularRoutes: getPopularRoutes,
@@ -83,6 +94,7 @@ angular.module('roadtrippin.mapsFactory', [])
       saveJourneyWithWaypoints: saveJourneyWithWaypoints,
       getAllRoutes: getAllRoutes,
       signout: signout,
-      deleteJourney: deleteJourney
+      deleteJourney: deleteJourney,
+      getLocation:getLocation
     };
   });

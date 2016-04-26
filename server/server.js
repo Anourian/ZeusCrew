@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var parser = require('body-parser');
 var userController = require('./users/userController.js');
 var journeyController = require('./journey/journeyController.js');
+var yelp = require('./yelp.js');
 
 var app = express();
 
@@ -27,6 +28,7 @@ app.get('/saveJourney/:username', journeyController.getUserRoute);
 app.post('/signin', userController.signin);
 app.post('/signup', userController.signup);
 app.post('/deleteJourney', journeyController.deleteOne);
+app.post('/yelpLocation', yelp.getReviews); 
 
 app.use(userController.errorHandler);
 

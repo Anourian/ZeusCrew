@@ -249,7 +249,6 @@ angular.module('roadtrippin.maps', ['gservice'])
               geometry:geometry
             };
             places.push(place);
-            debugger;
           }
           //add stop locations to stops array, render stops to map
           gservice.render($scope.savedRoutes[i].startPoint, $scope.savedRoutes[i].endPoint, places)
@@ -272,5 +271,18 @@ angular.module('roadtrippin.maps', ['gservice'])
         array.push(i);
       }
       return array;
+    };
+    $scope.getLocation = function(place){
+      var name = place.name;
+      var location = place.location.join('');
+      var geometry = place.geometry;
+      var reqObj = {name:name, location:location, geometry:geometry};
+      mapFactory.getLocation(reqObj).then(function(val){
+        console.log(val);
+        place.rating = val.businesses[0].rating;
+        place.snippet = val.businesses[0].snippet_text;
+        place.url = val.businesses[0].url;
+        console.log(place.url);
+      });
     };
   });
