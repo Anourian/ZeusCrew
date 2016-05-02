@@ -12,7 +12,7 @@
       <li><a ng-show="!username.username" ui-sref="signup">Sign Up</a></li>
     </ul>
   </div>
-  <h1 class="title col-xs-10">Thunder Routes</h1>
+  <h1 class="title col-xs-10">Thunder Road Trips</h1>
 </header>
 <!-- Search form -->
 <form class="form-inline">
@@ -62,7 +62,7 @@
       <p class="stop-address">{{place.location[0]}}</p>
       <p class="stop-address">{{place.location[1]}}, {{place.location[2]}}</p>
       <p class="stop-address">{{place.location[3]}}</p>
-      <button ng-click='getLocation(place)'>Search Yelp Reviews</button>
+      <button ng-show="place.name != 'Custom Location'" ng-click='getYelpLocation(place)'>Search Yelp Reviews</button>
       <div class='review' ng-show='place.snippet || place.url || place.rating'>
         <h4 class="text-center" ng-show='place.rating !== undefined'>{{place.rating}} Star<span ng-show='place.rating > 1'>s</span></h4>
         <div ng-show='place.snippet !== undefined'>
@@ -83,7 +83,7 @@
 
 <!-- User routes -->
 <div class="row">
-  <div class="col-xs-6">
+  <div ng-show="username.username" class="col-xs-6">
     <h3 class="infoHeader"><i class="fa fa-caret-right fa-rotate-90" aria-hidden="true"></i>User Routes</h3>
     <div class="row info save-routes" ng-repeat="route in savedRoutes">
       <div class="col-xs-4">
@@ -102,7 +102,7 @@
     </div>
   </div>
   <!-- Saved routes -->
-  <div class="col-xs-6">
+  <div ng-class="{'col-xs-12': !username.username, 'col-xs-6':username.username}">
     <h3 class="infoHeader"><i class="fa fa-caret-right fa-rotate-90" aria-hidden="true"></i>Popular Routes</h3>
     <div class="row info save-routes" ng-repeat="route in popularRoutes">
       <div class="col-xs-4">

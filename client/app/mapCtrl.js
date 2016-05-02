@@ -157,9 +157,11 @@ angular.module('roadtrippin.maps', ['gservice'])
     };
 
     $scope.getAll = function () {
-      mapFactory.getAllRoutes().then(function (results) {
-        $scope.savedRoutes = results;
-      });
+      if ($scope.username.username){
+        mapFactory.getAllRoutes().then(function (results) {
+          $scope.savedRoutes = results;
+        });        
+      }
     };
     $scope.shareRoute = function (hash) {
       $scope.savedRoutes.forEach(function(obj, index) {
@@ -178,27 +180,41 @@ angular.module('roadtrippin.maps', ['gservice'])
 
     $scope.viewPopularRoute = function(hash) {
       $location.hash('top');
-      $anchorScroll();
+      $anchorScroll();     
       for (var i = 0; i < $scope.popularRoutes.length; i++) {
         if ($scope.popularRoutes[i].hash === hash) {
           //split up waypoints array into names ans locations. Even index ==== name, odd index === location
           $scope.popularRoutes[i].stopLocations = [];
           $scope.popularRoutes[i].stopNames = [];
+          $scope.popularRoutes[i].stopGeometryLat = [];
+          $scope.popularRoutes[i].stopGeometryLng = [];
+           var counter = 0;
           for (var j = 0; j < $scope.popularRoutes[i].wayPoints.length; j++) {
-            if (j % 2 === 0) {
+            if (counter === 0) {
               $scope.popularRoutes[i].stopNames.push($scope.popularRoutes[i].wayPoints[j]);
-            } else {
+            } else if (counter === 1){
               $scope.popularRoutes[i].stopLocations.push($scope.popularRoutes[i].wayPoints[j]);
+            } else if (counter === 2) {
+              $scope.popularRoutes[i].stopGeometryLat.push($scope.popularRoutes[i].wayPoints[j]);
+            } else if (counter === 3) {
+              $scope.popularRoutes[i].stopGeometryLng.push($scope.popularRoutes[i].wayPoints[j]);
+            }
+            if (counter < 3){
+              counter ++;
+            } else {
+              counter = 0;
             }
           }
           //set $scope.places to saved stop data so stop data will display on page
           var places = [];
           for (var k = 0; k < $scope.popularRoutes[i].stopNames.length; k++) {
             var location = $scope.popularRoutes[i].stopLocations[k];
+            var geometry = {lat:$scope.popularRoutes[i].stopGeometryLat[k], lng:$scope.popularRoutes[i].stopGeometryLng[k]};
             var place = {
               name: $scope.popularRoutes[i].stopNames[k],
               location: location,
-              position: k
+              position: k,
+              geometry:geometry
             };
             places.push(place);
           }
@@ -272,7 +288,7 @@ angular.module('roadtrippin.maps', ['gservice'])
       }
       return array;
     };
-    $scope.getLocation = function(place){
+    $scope.getYelpLocation = function(place){
       var name = place.name;
       var location = place.location.join('');
       var geometry = place.geometry;
